@@ -1,0 +1,35 @@
+# Example api-gateway configuration.
+# Copy to config.toml and adjust, then run: ./api-gateway [path/to/config.toml]
+
+# Address the gateway listens on. Optional, defaults to "0.0.0.0:8080".
+listen_address = "0.0.0.0:8080"
+
+# Where to send authorization checks. Only required if at least one service
+# requires authentication. The caller's Authorization header is forwarded to
+# this URL; a 2xx response lets the request through.
+authorization_api_url = "https://auth.example.com/api/v1/authorization"
+
+# Per-request timeout (connect + response headers), in seconds. Optional, defaults to 30.
+timeout_seconds = 30
+
+[[services]]
+# Regex matched against the request path. Patterns are anchored to the start
+# of the path automatically ("/users" behaves like "^/users").
+path = "^/users"
+# Scheme + host of the backend. The port can live here...
+target_service = "http://localhost:3001"
+# No authentication for this service. Defaults to true when omitted!
+authentication_required = false
+
+[[services]]
+path = "^/orders"
+target_service = "http://localhost"
+# ...or in the legacy separate field (number or string).
+target_port = 3002
+authentication_required = true
+
+[[services]]
+# HTTPS backends work too.
+path = "^/payments"
+target_service = "https://payments.example.com"
+authentication_required = true

@@ -1,0 +1,11 @@
+# Example production Caddyfile: Caddy terminates TLS (with automatic,
+# auto-renewing Let's Encrypt certificates) and forwards everything to vordr,
+# which stays bound to loopback and is never reached directly.
+#
+# Usage: replace the domain below, put this at /etc/caddy/Caddyfile, and
+# run `caddy run --config Caddyfile`. Vordr should be started separately
+# with `listen_address = "127.0.0.1:8080"` in its config.
+
+gateway.example.com {
+	reverse_proxy 127.0.0.1:8080
+}

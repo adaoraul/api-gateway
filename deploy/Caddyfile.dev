@@ -1,0 +1,7 @@
+# Used by docker-compose.yml for a local, no-domain-required demo. Caddy's
+# internal CA issues a locally-trusted certificate instead of using ACME, so
+# there's HTTPS to terminate without owning a public domain.
+localhost:8443 {
+	tls internal
+	reverse_proxy vordr:8080
+}

@@ -95,10 +95,12 @@ async fn forward(
         headers.insert(HeaderName::from_static("x-forwarded-host"), host);
     }
     append_forwarded_for(&mut headers, client_addr);
-    headers.insert(
-        HeaderName::from_static("x-forwarded-proto"),
-        HeaderValue::from_static("http"),
-    );
+    // Vordr's own listener always speaks plain HTTP, but a TLS-terminating
+    // proxy in front (e.g. Caddy) may already have set this to "https" for
+    // the original client connection - don't clobber that.
+    headers
+        .entry(HeaderName::from_static("x-forwarded-proto"))
+        .or_insert_with(|| HeaderValue::from_static("http"));
 
     let mut upstream_request = Request::builder()
         .method(method.clone())

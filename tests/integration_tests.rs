@@ -263,6 +263,26 @@ async fn forwarded_headers_are_set_and_hop_by_hop_headers_are_stripped() {
 }
 
 #[tokio::test]
+async fn preserves_x_forwarded_proto_set_by_a_fronting_proxy() {
+    let upstream = spawn_echo_upstream().await;
+    let gateway = spawn_gateway(&public_route_config(upstream)).await;
+
+    // A TLS-terminating proxy in front (e.g. Caddy) would set this to
+    // "https" for the original client connection; vordr's own listener only
+    // ever speaks plain HTTP, so it must not overwrite an existing value.
+    let response = reqwest::Client::new()
+        .get(format!("http://{gateway}/api/users"))
+        .header("x-forwarded-proto", "https")
+        .send()
+        .await
+        .unwrap();
+
+    assert_eq!(response.status(), 200);
+    let echoed: Value = response.json().await.unwrap();
+    assert_eq!(echoed["headers"]["x-forwarded-proto"], "https");
+}
+
+#[tokio::test]
 async fn response_carries_a_request_id_header() {
     let upstream = spawn_echo_upstream().await;
     let gateway = spawn_gateway(&public_route_config(upstream)).await;

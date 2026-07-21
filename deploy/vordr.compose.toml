@@ -1,0 +1,8 @@
+# Gateway config for the docker-compose demo. Routes everything to the
+# "backend" service on the compose network.
+listen_address = "0.0.0.0:8080"
+
+[[services]]
+path = "^/"
+target_service = "http://backend:8080"
+authentication_required = false

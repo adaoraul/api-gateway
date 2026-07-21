@@ -101,6 +101,44 @@ verbosity (`info` by default; try `debug` for per-request detail beyond the
 access-log line). Set `VORDR_LOG_FORMAT=json` for structured, one-line-per-
 event JSON output suited to log aggregators.
 
+## Running behind Caddy (TLS termination)
+
+Vordr has no TLS listener of its own — it's meant to sit behind a proxy that
+terminates HTTPS, which is exactly what [Caddy](https://caddyserver.com) does
+well, including fully automatic certificates via Let's Encrypt. Bind vordr to
+loopback and let Caddy be the only thing exposed publicly:
+
+```
+# /etc/caddy/Caddyfile — see deploy/Caddyfile.example
+gateway.example.com {
+    reverse_proxy 127.0.0.1:8080
+}
+```
+
+```toml
+# vordr's config.toml
+listen_address = "127.0.0.1:8080"
+```
+
+Caddy sets `X-Forwarded-For`, `X-Forwarded-Proto`, and `X-Forwarded-Host` on
+the request it sends to vordr; vordr preserves them (appending its own hop to
+`X-Forwarded-For`) rather than overwriting them, so backends behind vordr see
+the original client's scheme and address.
+
+### Try it with Docker Compose
+
+No domain or local Caddy install needed — [docker-compose.yml](docker-compose.yml)
+wires up Caddy (using its internal CA for a locally-trusted cert), vordr, and
+a trivial backend:
+
+```bash
+docker compose up --build
+curl -k https://localhost:8443/
+```
+
+See [deploy/Caddyfile.dev](deploy/Caddyfile.dev) and
+[deploy/vordr.compose.toml](deploy/vordr.compose.toml) for the configs it uses.
+
 ## Development
 
 ```bash

@@ -1,0 +1,24 @@
+# Local demo: Caddy (TLS termination) -> vordr (routing/auth) -> backend.
+# Try it: docker compose up --build, then curl -k https://localhost:8443/
+services:
+  caddy:
+    image: caddy:2-alpine
+    ports:
+      - "8443:8443"
+    volumes:
+      - ./deploy/Caddyfile.dev:/etc/caddy/Caddyfile:ro
+      - caddy_data:/data
+    depends_on:
+      - vordr
+
+  vordr:
+    build: .
+    volumes:
+      - ./deploy/vordr.compose.toml:/etc/vordr/config.toml:ro
+
+  backend:
+    image: caddy:2-alpine
+    command: ["caddy", "respond", "--listen", ":8080", "--body", "hello from the backend"]
+
+volumes:
+  caddy_data:

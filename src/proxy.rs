@@ -53,10 +53,10 @@ async fn handle(
             .authorization_api_url
             .as_ref()
             .ok_or(GatewayError::AuthServiceUnavailable)?;
-        let auth_header = request
-            .headers()
-            .get(AUTHORIZATION)
-            .ok_or(GatewayError::MissingAuthorization)?;
+        let auth_header = request.headers().get(AUTHORIZATION).ok_or_else(|| {
+            warn!("missing Authorization header");
+            GatewayError::MissingAuthorization
+        })?;
         auth::authorize(
             &state.client,
             auth_api_url,

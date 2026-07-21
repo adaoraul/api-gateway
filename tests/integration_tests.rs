@@ -261,3 +261,21 @@ async fn forwarded_headers_are_set_and_hop_by_hop_headers_are_stripped() {
     assert!(!headers.contains_key("connection"));
     assert!(!headers.contains_key("transfer-encoding"));
 }
+
+#[tokio::test]
+async fn response_carries_a_request_id_header() {
+    let upstream = spawn_echo_upstream().await;
+    let gateway = spawn_gateway(&public_route_config(upstream)).await;
+
+    let response = reqwest::get(format!("http://{gateway}/api/users"))
+        .await
+        .unwrap();
+
+    let request_id = response
+        .headers()
+        .get("x-request-id")
+        .expect("response should carry a request id")
+        .to_str()
+        .unwrap();
+    assert!(!request_id.is_empty());
+}

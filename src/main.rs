@@ -7,11 +7,7 @@ use tracing_subscriber::EnvFilter;
 
 #[tokio::main]
 async fn main() -> anyhow::Result<()> {
-    tracing_subscriber::fmt()
-        .with_env_filter(
-            EnvFilter::try_from_default_env().unwrap_or_else(|_| EnvFilter::new("info")),
-        )
-        .init();
+    init_logging();
 
     let config_path = std::env::args()
         .nth(1)
@@ -38,6 +34,20 @@ async fn main() -> anyhow::Result<()> {
 
     info!("shut down cleanly");
     Ok(())
+}
+
+fn init_logging() {
+    let json_logs =
+        std::env::var("VORDR_LOG_FORMAT").is_ok_and(|value| value.eq_ignore_ascii_case("json"));
+    let filter = || EnvFilter::try_from_default_env().unwrap_or_else(|_| EnvFilter::new("info"));
+    if json_logs {
+        tracing_subscriber::fmt()
+            .with_env_filter(filter())
+            .json()
+            .init();
+    } else {
+        tracing_subscriber::fmt().with_env_filter(filter()).init();
+    }
 }
 
 async fn shutdown_signal() {

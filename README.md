@@ -22,7 +22,9 @@ It is designed for two audiences:
 - Correct proxy behavior: query strings preserved, hop-by-hop headers stripped,
   `X-Forwarded-For` / `X-Forwarded-Proto` / `X-Forwarded-Host` set
 - Configurable timeouts (`504` on upstream timeout) and listen address
-- Structured logging via `tracing` (`RUST_LOG` controls verbosity)
+- Structured logging via `tracing`, with a request id correlating every log
+  line for a request (`RUST_LOG` controls verbosity, `VORDR_LOG_FORMAT=json`
+  for machine-readable output)
 - Graceful shutdown on Ctrl+C / SIGTERM
 - `/health-check` endpoint always answered by the gateway itself
 
@@ -88,6 +90,16 @@ caller's `Authorization` header is passed through to the backend.
 | `502` | Auth API or backend unreachable (or auth API 5xx). |
 | `504` | Backend did not respond within `timeout_seconds`. |
 | anything else | Returned by the backend, passed through unchanged. |
+
+## Logging
+
+Every request gets a `request_id` (a UUIDv4, or one already set by an
+upstream proxy) that's attached to every log line for that request and
+echoed back on the `X-Request-Id` response header, so you can grep one
+request's full story out of concurrent traffic. `RUST_LOG` controls
+verbosity (`info` by default; try `debug` for per-request detail beyond the
+access-log line). Set `VORDR_LOG_FORMAT=json` for structured, one-line-per-
+event JSON output suited to log aggregators.
 
 ## Development
 

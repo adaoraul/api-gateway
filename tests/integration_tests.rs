@@ -24,8 +24,8 @@ async fn serve(router: Router) -> SocketAddr {
 }
 
 async fn spawn_gateway(config_toml: &str) -> SocketAddr {
-    let config = api_gateway::config::parse(config_toml).expect("invalid test config");
-    serve(api_gateway::app(config)).await
+    let config = vordr::config::parse(config_toml).expect("invalid test config");
+    serve(vordr::app(config)).await
 }
 
 /// Upstream that echoes the request back as JSON.

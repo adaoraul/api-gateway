@@ -1,5 +1,5 @@
-# Example api-gateway configuration.
-# Copy to config.toml and adjust, then run: ./api-gateway [path/to/config.toml]
+# Example vordr configuration.
+# Copy to config.toml and adjust, then run: ./vordr [path/to/config.toml]
 
 # Address the gateway listens on. Optional, defaults to "0.0.0.0:8080".
 listen_address = "0.0.0.0:8080"

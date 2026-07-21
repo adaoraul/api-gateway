@@ -1,8 +1,10 @@
-# API Gateway
+# Vordr
 
-A small, single-binary API gateway written in Rust (axum / hyper 1.x). It routes
-requests to backend services by matching the request path against regex
-patterns, and can delegate authentication to an external authorization API.
+**Vordr** (Old Norse *vörðr*, "warden" — a guardian spirit that walks ahead of
+a person) is a small, single-binary API gateway written in Rust (axum /
+hyper 1.x). It routes requests to backend services by matching the request path
+against regex patterns, and can delegate authentication to an external
+authorization API.
 
 It is designed for two audiences:
 
@@ -29,14 +31,14 @@ It is designed for two audiences:
 Requires a recent stable Rust toolchain.
 
 ```bash
-git clone https://github.com/adaoraul/api-gateway.git
-cd api-gateway
+git clone https://github.com/adaoraul/vordr.git
+cd vordr
 cp config.example.toml config.toml   # then edit it
 cargo build --release
-./target/release/api-gateway         # or: ./target/release/api-gateway path/to/config.toml
+./target/release/vordr               # or: ./target/release/vordr path/to/config.toml
 ```
 
-The config file path can also be set with the `GATEWAY_CONFIG` environment
+The config file path can also be set with the `VORDR_CONFIG` environment
 variable; the first CLI argument wins, and the default is `./config.toml`.
 
 ## Configuration

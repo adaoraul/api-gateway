@@ -1,16 +1,16 @@
 [package]
-name = "api_gateway"
+name = "vordr"
 version = "0.2.0"
 edition = "2024"
 description = "A small, single-binary API gateway for local development and small-scale deployments"
 license = "MIT"
 
 [lib]
-name = "api_gateway"
+name = "vordr"
 path = "src/lib.rs"
 
 [[bin]]
-name = "api-gateway"
+name = "vordr"
 path = "src/main.rs"
 
 [dependencies]

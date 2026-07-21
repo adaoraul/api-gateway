@@ -15,10 +15,10 @@ async fn main() -> anyhow::Result<()> {
 
     let config_path = std::env::args()
         .nth(1)
-        .or_else(|| std::env::var("GATEWAY_CONFIG").ok())
+        .or_else(|| std::env::var("VORDR_CONFIG").ok())
         .unwrap_or_else(|| "config.toml".to_string());
 
-    let config = api_gateway::config::load(&config_path)
+    let config = vordr::config::load(&config_path)
         .with_context(|| format!("failed to load configuration from `{config_path}`"))?;
 
     let listen_address = config.listen_address;
@@ -26,11 +26,11 @@ async fn main() -> anyhow::Result<()> {
         .await
         .with_context(|| format!("failed to bind to `{listen_address}`"))?;
 
-    info!(%listen_address, routes = config.routes.len(), "starting api-gateway");
+    info!(%listen_address, routes = config.routes.len(), "starting vordr");
 
     axum::serve(
         listener,
-        api_gateway::app(config).into_make_service_with_connect_info::<SocketAddr>(),
+        vordr::app(config).into_make_service_with_connect_info::<SocketAddr>(),
     )
     .with_graceful_shutdown(shutdown_signal())
     .await
